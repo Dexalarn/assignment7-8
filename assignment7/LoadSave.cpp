@@ -5,49 +5,49 @@
 
 using json = nlohmann::json;
 
-void LoadData(std::vector<Book>& books, const std::string& filename) {
+void LoadData(std::vector<LibItem>& LibItems, const std::string& filename) {
     std::ifstream inFile(filename);
     if (!inFile) {
         throw std::runtime_error("Cannot open file for reading");
     }
-    json jBooks;
-    inFile >> jBooks;
+    json jLibItems;
+    inFile >> jLibItems;
 
-    for (const auto& jBook : jBooks) {
-        if (jBook.contains("name") && jBook.contains("date") && jBook.contains("writer") && jBook.contains("availability") && jBook.contains("ID")) {
-            books.emplace_back(
-                jBook.at("name").get<std::string>(),
-                jBook.at("date").get<std::string>(),
-                jBook.at("writer").get<std::string>(),
-                jBook.at("availability").get<bool>(),
-                jBook.at("ID").get<int>()
+    for (const auto& jLibItem : jLibItems) {
+        if (jLibItem.contains("name") && jLibItem.contains("date") && jLibItem.contains("writer") && jLibItem.contains("availability") && jLibItem.contains("ID")) {
+            LibItems.emplace_back(
+                jLibItem.at("name").get<std::string>(),
+                jLibItem.at("date").get<std::string>(),
+                jLibItem.at("writer").get<std::string>(),
+                jLibItem.at("availability").get<bool>(),
+                jLibItem.at("ID").get<int>()
             );
         }
         else {
-            std::cerr << "Error: One of the book entries is missing required fields." << std::endl;
+            std::cerr << "Error: One of the Library Item entries is missing required fields." << std::endl;
         }
     }
     inFile.close();
 }
 
-void SaveData(const std::vector<Book>& books, const std::string& filename) {
-    json jBooks = json::array();
+void SaveData(const std::vector<LibItem>& LibItems, const std::string& filename) {
+    json jLibItems = json::array();
 
-    for (const auto& book : books) {
-        jBooks.push_back({
-            {"name", book.name},
-            {"date", book.date},
-            {"writer", book.writer},
-            {"availability", book.availability},
-            {"ID", book.ID}
+    for (const auto& LibItem : LibItems) {
+        jLibItems.push_back({
+            {"name", LibItem.name},
+            {"date", LibItem.date},
+            {"writer", LibItem.writer},
+            {"availability", LibItem.availability},
+            {"ID", LibItem.ID}
             });
     }
 
     std::ofstream outFile(filename);
-    outFile << jBooks.dump(4); // Pretty-printing the JSON with an indent of 4 spaces
+    outFile << jLibItems.dump(4); // Pretty-printing the JSON with an indent of 4 spaces
     outFile.close();
 
-    std::cout << "Books data saved to " << filename << std::endl;
+    std::cout << "Library Items data saved to " << filename << std::endl;
 }
 
 void LoadUsers(std::vector<User>& users, const std::string& filename) {
@@ -59,18 +59,19 @@ void LoadUsers(std::vector<User>& users, const std::string& filename) {
     inFile >> jUsers;
 
     for (const auto& jUser : jUsers) {
-        if (jUser.contains("username") && jUser.contains("password") && jUser.contains("inventory")) {
+        if (jUser.contains("username") && jUser.contains("password") && jUser.contains("inventory") && jUser.contains("Membership")){
             User user(
                 jUser.at("username").get<std::string>(),
-                jUser.at("password").get<std::string>()
+                jUser.at("password").get<std::string>(),
+                jUser.at("Membership").get<int>()
             );
-            for (const auto& jBook : jUser.at("inventory")) {
+            for (const auto& jLibItem : jUser.at("inventory")) {
                 user.inventory.emplace_back(
-                    jBook.at("name").get<std::string>(),
-                    jBook.at("date").get<std::string>(),
-                    jBook.at("writer").get<std::string>(),
-                    jBook.at("availability").get<bool>(),
-                    jBook.at("ID").get<int>()
+                    jLibItem.at("name").get<std::string>(),
+                    jLibItem.at("date").get<std::string>(),
+                    jLibItem.at("writer").get<std::string>(),
+                    jLibItem.at("availability").get<bool>(),
+                    jLibItem.at("ID").get<int>()
                 );
             }
             users.push_back(user);
@@ -88,16 +89,17 @@ void SaveUsers(const std::vector<User>& users, const std::string& filename) {
     for (const auto& user : users) {
         json jUser = {
             {"username", user.getUsername()},
-            {"password", user.getPassword()}
+            {"password", user.getPassword()},
+            {"Membership", user.Membership}
         };
         json jInventory = json::array();
-        for (const auto& book : user.inventory) {
+        for (const auto& LibItem : user.inventory) {
             jInventory.push_back({
-                {"name", book.name},
-                {"date", book.date},
-                {"writer", book.writer},
-                {"availability", book.availability},
-                {"ID", book.ID}
+                {"name", LibItem.name},
+                {"date", LibItem.date},
+                {"writer", LibItem.writer},
+                {"availability", LibItem.availability},
+                {"ID", LibItem.ID}
                 });
         }
         jUser["inventory"] = jInventory;

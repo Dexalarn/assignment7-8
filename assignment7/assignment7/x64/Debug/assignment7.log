@@ -1,6 +1,7 @@
-﻿  Book.cpp
+﻿  LibItem.cpp
+C:\Users\Dexalarn\source\repos\assignment7\LibItem.cpp(75,122): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   LoadSave.cpp
-  main.cpp
   User.cpp
+  main.cpp
   Generating Code...
   assignment7.vcxproj -> C:\Users\Dexalarn\source\repos\assignment7\x64\Debug\assignment7.exe

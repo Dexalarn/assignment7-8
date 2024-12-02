@@ -3,20 +3,23 @@
 
 #include <string>
 #include <vector>
-#include "Book.h"
-
+#include "LibItem.h"
+class LibItem;
 class User {
 public:
     std::string username;
     std::string password;
-    std::vector<Book> inventory;
+    int Membership;
+    int LibItemLimit = Membership*2-1;
 
-    User(const std::string& username, const std::string& password)
-        : username(username), password(password) {}
+    std::vector<LibItem> inventory;
+
+    User(const std::string& username, const std::string& password, const int Membership)
+        : username(username), password(password), Membership(Membership) {}
 
     static std::vector<User>& getUsers();
-    static void addUser(const std::string& username, const std::string& password);
-    static void listInventory(User* loggedUser);
+    static void newUser();
+    void listInventory();
 
 
     const std::string& getUsername() const { return username; }

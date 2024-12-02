@@ -1,0 +1,22 @@
+[
+    {
+        "Membership": 69420,
+        "inventory": [],
+        "password": "123",
+        "username": "Dex"
+    },
+    {
+        "Membership": 1,
+        "inventory": [
+            {
+                "ID": 1,
+                "availability": true,
+                "date": "1949-06-08",
+                "name": "1984",
+                "writer": "George Orwell"
+            }
+        ],
+        "password": "123",
+        "username": "Alex"
+    }
+]

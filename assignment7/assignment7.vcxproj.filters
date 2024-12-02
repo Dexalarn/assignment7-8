@@ -21,7 +21,7 @@
     <ClCompile Include="User.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
-    <ClCompile Include="Book.cpp">
+    <ClCompile Include="LibItem.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
     <ClCompile Include="LoadSave.cpp">
@@ -32,7 +32,7 @@
     <ClInclude Include="User.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Book.h">
+    <ClInclude Include="LibItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="json.hpp">
@@ -43,7 +43,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="books.json">
+    <None Include="LibItems.json">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="users.json">

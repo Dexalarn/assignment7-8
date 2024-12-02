@@ -1,22 +1,47 @@
 #include "User.h"
+#include "LoadSave.h"
 #include <vector>
 #include <iostream>
-
+using namespace std;
 static std::vector<User> users;
 
 std::vector<User>& User::getUsers() {
     return users;
 }
 
-void User::addUser(const std::string& username, const std::string& password) {
-    users.emplace_back(username, password);
-}
-void User::listInventory(User* User) {
-    for (int i = 0; i < User->inventory.size(); i++) {
-        std::cout << User->inventory[i].ID 
-            << User->inventory[i].name << "   "
-            << User->inventory[i].date << "   "
-            << User->inventory[i].writer << "   "
+void User::listInventory() {
+    for (int i = 0; i < this->inventory.size(); i++) {
+        std::cout << this->inventory[i].ID<<"   "
+            << this->inventory[i].name << "   "
+            << this->inventory[i].date << "   "
+            << this->inventory[i].writer << "   "
             << std::endl;
     }
+}
+void User::newUser() {
+    string name;
+    string passwd;
+    int mem;
+    cout << "Write a name: ";
+    cin >> name;
+    cout << "Create a password: ";
+    cin >> passwd;
+
+    cout << "Member type: " << endl;
+    cout << "1. GuestMemeber" << endl;
+    cout << "2. StudentMemeber" << endl;
+    cout << "3. FacultyMember" << endl;
+    cin >> mem;
+    if (mem != 1 || mem != 2 || mem != 3 || mem != 69420) {
+        users.emplace_back(name, passwd, mem);
+        SaveUsers(User::getUsers(), "users.json"); // Save users after adding a new one
+        cout << "Account created." << endl;
+        cout << "Press Enter to clear the screen...";
+        cin.ignore(); // Wait for user to press Enter
+        cin.ignore();
+    }
+    else {
+        cout << "no such member type" << endl;
+    }
+    
 }
