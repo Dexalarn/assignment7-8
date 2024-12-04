@@ -7,16 +7,22 @@
     },
     {
         "Membership": 1,
+        "inventory": [],
+        "password": "123",
+        "username": "Alex"
+    },
+    {
+        "Membership": 2,
         "inventory": [
             {
-                "ID": 1,
-                "availability": true,
-                "date": "1949-06-08",
-                "name": "1984",
-                "writer": "George Orwell"
+                "ID": 6,
+                "Issue": "right now issue",
+                "availability": false,
+                "dueToDate": "18.12",
+                "type": "Magazine"
             }
         ],
         "password": "123",
-        "username": "Alex"
+        "username": "Student1"
     }
 ]

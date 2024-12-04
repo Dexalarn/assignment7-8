@@ -22,6 +22,13 @@ void MainPage();
 void SecondPage();
 void ManagerPage();
 
+void SaveAll() {
+    std::vector<User>& users = User::getUsers();
+    std::vector<LibraryItem*>& LibItems = LibraryItem::getLibraryItems(); 
+    // Save users and Library Items data before exiting
+    SaveUsers(users, "users.json");
+    SaveData(LibItems, "LibItems.json");
+}
 
 User* LogIn() {
     string name;
@@ -57,7 +64,6 @@ void MainPage() {
     cout << "3. Exit" << endl;
     cout << "4. Log In as Library Manager" << endl;
 
-
     int action;
     cin >> action;
     switch (action) {
@@ -66,11 +72,10 @@ void MainPage() {
         break;
     case 2:
         User::newUser();
+        SaveAll();
         MainPage();
         break;
-    
     case 3:
-
         break;
     case 4:
         ManagerPage();
@@ -90,7 +95,7 @@ void SecondPage() {
         return;
     }
     cout << "Library Items: " << endl << endl;
-    LibItem::listLibItems();
+    LibraryItem::listLibraryItems(); // Corrected method name and class
     cout << "1. Borrow a Library Item " << endl;
     cout << "2. Return an Item" << endl;
     cout << "3. Exit " << endl;
@@ -103,15 +108,17 @@ void SecondPage() {
             int LibItemID;
             cin >> LibItemID;
             bool LibItemFound = false;
-            for (auto& LibItem : LibItem::getLibItems()) {  // Fixed
-                if (LibItem.ID == LibItemID) {
+            for (auto& LibItem : LibraryItem::getLibraryItems()) {
+                if (LibItem->getId() == LibItemID) { // Changed to pointer access
                     LibItemFound = true;
-                    LibItem.borrowLibItem(loggedUser);  // Fixed function call
+                    LibItem->borrowLibItem(LibItem,loggedUser); 
+                    
                 }
             }
             if (!LibItemFound) {
                 cout << "Library Item ID not found." << endl;
             }
+            SaveAll();
             cin.ignore(); // Wait for user to press Enter
             cin.ignore();
             MainPage();
@@ -125,7 +132,8 @@ void SecondPage() {
             cin >> action;
             if (action == 1) {
                 clearScreen();
-                LibItem::returnItem(loggedUser);
+                LibraryItem::returnLibItem(loggedUser);
+                SaveAll();
                 MainPage();
             }
             else {
@@ -135,7 +143,8 @@ void SecondPage() {
         break;
     case 2:
         clearScreen();
-        LibItem::returnItem(loggedUser);
+        LibraryItem::returnLibItem(loggedUser);
+        SaveAll();
         MainPage();
         break;
     case 3:
@@ -148,7 +157,7 @@ void SecondPage() {
     }
 }
 
-void ManagerPage(){
+void ManagerPage() {
     clearScreen();
     cout << "Log In" << endl;
     User* loggedUser = LogIn();
@@ -166,33 +175,31 @@ void ManagerPage(){
         cin >> HelpMeIAmTired;
         switch (HelpMeIAmTired) {
         case 1:
-            LibItem::AddItem();
+            LibraryItem::AddItem();
+            SaveAll();
             MainPage();
             break;
         case 2:
             MainPage();
             break;
-        default:\
+        default:
             MainPage();
             break;
         }
+        std::vector<LibraryItem*>& LibItems = LibraryItem::getLibraryItems(); // Changed to pointer type
+        SaveData(LibItems, "LibItems.json");
     }
-    
 }
 
 int main() {
     try {
         std::vector<User>& users = User::getUsers();
+        std::vector<LibraryItem*>& LibItems = LibraryItem::getLibraryItems(); // Changed to pointer type
         LoadUsers(users, "users.json");
-
-        std::vector<LibItem>& LibItems = LibItem::getLibItems();
         LoadData(LibItems, "LibItems.json");
 
         MainPage();
-
-        // Save users and Library Items data before exiting
-        SaveUsers(users, "users.json");
-        SaveData(LibItems, "LibItems.json");
+        SaveAll();
     }
     catch (const std::exception& e) {
         std::cerr << "Exception occurred in main: " << e.what() << std::endl;

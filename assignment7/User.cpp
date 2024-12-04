@@ -1,8 +1,9 @@
 #include "User.h"
+#include "LibItem.h"
 #include "LoadSave.h"
-#include <vector>
 #include <iostream>
 using namespace std;
+
 static std::vector<User> users;
 
 std::vector<User>& User::getUsers() {
@@ -11,13 +12,13 @@ std::vector<User>& User::getUsers() {
 
 void User::listInventory() {
     for (int i = 0; i < this->inventory.size(); i++) {
-        std::cout << this->inventory[i].ID<<"   "
-            << this->inventory[i].name << "   "
-            << this->inventory[i].date << "   "
-            << this->inventory[i].writer << "   "
+        std::cout << this->inventory[i]->getId() << "   "
+            << (dynamic_cast<Book*>(this->inventory[i]) ? "Book" : "Magazine") << "   "
+            << "Due To Date: " << this->inventory[i]->getDueToDate()
             << std::endl;
     }
 }
+
 void User::newUser() {
     string name;
     string passwd;
@@ -32,7 +33,7 @@ void User::newUser() {
     cout << "2. StudentMemeber" << endl;
     cout << "3. FacultyMember" << endl;
     cin >> mem;
-    if (mem != 1 || mem != 2 || mem != 3 || mem != 69420) {
+    if (mem == 1 || mem == 2 || mem == 3 || mem == 69420) {
         users.emplace_back(name, passwd, mem);
         SaveUsers(User::getUsers(), "users.json"); // Save users after adding a new one
         cout << "Account created." << endl;
@@ -43,5 +44,4 @@ void User::newUser() {
     else {
         cout << "no such member type" << endl;
     }
-    
 }

@@ -2,106 +2,43 @@
     {
         "ID": 1,
         "availability": false,
-        "date": "1949-06-08",
-        "name": "1984",
-        "writer": "George Orwell"
+        "dueToDate": "1.1",
+        "title": "Best title",
+        "type": "Book"
     },
     {
         "ID": 2,
         "availability": true,
-        "date": "1960-07-11",
-        "name": "To Kill a Mockingbird",
-        "writer": "Harper Lee"
+        "dueToDate": "",
+        "issue": "issue of the year",
+        "type": "Magazine"
     },
     {
         "ID": 3,
-        "availability": true,
-        "date": "1925-04-10",
-        "name": "The Great Gatsby",
-        "writer": "F. Scott Fitzgerald"
+        "availability": false,
+        "dueToDate": "1.1",
+        "title": "GoodTitle",
+        "type": "Book"
     },
     {
         "ID": 4,
         "availability": true,
-        "date": "1813-01-28",
-        "name": "Pride and Prejudice",
-        "writer": "Jane Austen"
+        "dueToDate": "",
+        "issue": "Right",
+        "type": "Magazine"
     },
     {
         "ID": 5,
         "availability": true,
-        "date": "1951-07-16",
-        "name": "The Catcher in the Rye",
-        "writer": "J.D. Salinger"
+        "dueToDate": "",
+        "title": "",
+        "type": "Book"
     },
     {
         "ID": 6,
-        "availability": true,
-        "date": "1937-09-21",
-        "name": "The Hobbit",
-        "writer": "J.R.R. Tolkien"
-    },
-    {
-        "ID": 7,
-        "availability": true,
-        "date": "1953-10-19",
-        "name": "Fahrenheit 451",
-        "writer": "Ray Bradbury"
-    },
-    {
-        "ID": 8,
-        "availability": true,
-        "date": "1847-10-16",
-        "name": "Jane Eyre",
-        "writer": "Charlotte Brontë"
-    },
-    {
-        "ID": 9,
-        "availability": true,
-        "date": "1932-08-18",
-        "name": "Brave New World",
-        "writer": "Aldous Huxley"
-    },
-    {
-        "ID": 10,
-        "availability": true,
-        "date": "1851-10-18",
-        "name": "Moby-Dick",
-        "writer": "Herman Melville"
-    },
-    {
-        "ID": 11,
-        "availability": true,
-        "date": "1869-01-01",
-        "name": "War and Peace",
-        "writer": "Leo Tolstoy"
-    },
-    {
-        "ID": 12,
-        "availability": true,
-        "date": "800-01-01",
-        "name": "The Odyssey",
-        "writer": "Homer"
-    },
-    {
-        "ID": 13,
-        "availability": true,
-        "date": "Right",
-        "name": "Item1",
-        "writer": "Now"
-    },
-    {
-        "ID": 14,
-        "availability": true,
-        "date": "A",
-        "name": "Item2",
-        "writer": "little"
-    },
-    {
-        "ID": 15,
-        "availability": true,
-        "date": "after",
-        "name": "item3",
-        "writer": "me"
+        "availability": false,
+        "dueToDate": "18.12",
+        "issue": "right now issue",
+        "type": "Magazine"
     }
 ]

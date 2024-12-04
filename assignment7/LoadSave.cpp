@@ -1,11 +1,13 @@
 #include "LoadSave.h"
+#include "LibItem.h"
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include "json.hpp"
 
 using json = nlohmann::json;
 
-void LoadData(std::vector<LibItem>& LibItems, const std::string& filename) {
+void LoadData(std::vector<LibraryItem*>& LibItems, const std::string& filename) {
     std::ifstream inFile(filename);
     if (!inFile) {
         throw std::runtime_error("Cannot open file for reading");
@@ -14,33 +16,56 @@ void LoadData(std::vector<LibItem>& LibItems, const std::string& filename) {
     inFile >> jLibItems;
 
     for (const auto& jLibItem : jLibItems) {
-        if (jLibItem.contains("name") && jLibItem.contains("date") && jLibItem.contains("writer") && jLibItem.contains("availability") && jLibItem.contains("ID")) {
-            LibItems.emplace_back(
-                jLibItem.at("name").get<std::string>(),
-                jLibItem.at("date").get<std::string>(),
-                jLibItem.at("writer").get<std::string>(),
-                jLibItem.at("availability").get<bool>(),
-                jLibItem.at("ID").get<int>()
-            );
+        int id = jLibItem.at("ID").get<int>();
+        bool availability = jLibItem.at("availability").get<bool>();
+        std::string type = jLibItem.at("type").get<std::string>();
+        std::string dueToDate = jLibItem.at("dueToDate").get<std::string>();
+
+        LibraryItem* item = nullptr;
+        if (type == "Book") {
+            
+            std::string title = jLibItem.at("title").get<std::string>();
+            item = new Book(id, availability, title);
         }
-        else {
-            std::cerr << "Error: One of the Library Item entries is missing required fields." << std::endl;
+        else if (type == "Magazine") {
+            std::string issue = jLibItem.at("issue").get<std::string>();
+            item = new Magazine(id, availability, issue);
+        }
+
+        if (item) {
+            item->setDueToDate(dueToDate);
+            LibItems.push_back(item);
         }
     }
     inFile.close();
 }
 
-void SaveData(const std::vector<LibItem>& LibItems, const std::string& filename) {
+void SaveData(const std::vector<LibraryItem*>& LibItems, const std::string& filename) {
     json jLibItems = json::array();
 
-    for (const auto& LibItem : LibItems) {
-        jLibItems.push_back({
-            {"name", LibItem.name},
-            {"date", LibItem.date},
-            {"writer", LibItem.writer},
-            {"availability", LibItem.availability},
-            {"ID", LibItem.ID}
-            });
+    for (const auto& item : LibItems) {
+        std::string type = dynamic_cast<Book*>(item) ? "Book" : "Magazine";
+         
+        if (type == "Book") {
+            
+            jLibItems.push_back({
+            {"ID", item->getId()},
+            {"title",item->getTitle()},
+            {"availability", item->isAvailable()},
+            {"dueToDate", item->getDueToDate()},
+            {"type", type}
+                });
+        }
+        else if (type == "Magazine") {
+            jLibItems.push_back({
+            {"ID", item->getId()},
+            {"issue",item->getIssue()},
+            {"availability", item->isAvailable()},
+            {"dueToDate", item->getDueToDate()},
+            {"type", type}
+                });
+        }
+        
     }
 
     std::ofstream outFile(filename);
@@ -59,20 +84,32 @@ void LoadUsers(std::vector<User>& users, const std::string& filename) {
     inFile >> jUsers;
 
     for (const auto& jUser : jUsers) {
-        if (jUser.contains("username") && jUser.contains("password") && jUser.contains("inventory") && jUser.contains("Membership")){
+        if (jUser.contains("username") && jUser.contains("password") && jUser.contains("inventory") && jUser.contains("Membership")) {
             User user(
                 jUser.at("username").get<std::string>(),
                 jUser.at("password").get<std::string>(),
                 jUser.at("Membership").get<int>()
             );
             for (const auto& jLibItem : jUser.at("inventory")) {
-                user.inventory.emplace_back(
-                    jLibItem.at("name").get<std::string>(),
-                    jLibItem.at("date").get<std::string>(),
-                    jLibItem.at("writer").get<std::string>(),
-                    jLibItem.at("availability").get<bool>(),
-                    jLibItem.at("ID").get<int>()
-                );
+                int id = jLibItem.at("ID").get<int>();
+                bool availability = jLibItem.at("availability").get<bool>();
+                std::string type = jLibItem.at("type").get<std::string>();
+                std::string dueToDate = jLibItem.at("dueToDate").get<std::string>();
+                
+                LibraryItem* item = nullptr;
+                if (type == "Book") {
+                    std::string title = jLibItem.at("title").get<std::string>();
+                    Book  item(id, availability,title);
+                }
+                else if (type == "Magazine") {\
+                    std::string issue = jLibItem.at("issue").get<std::string>();
+                    item = new Magazine(id, availability,issue);
+                }
+
+                if (item) {
+                    item->setDueToDate(dueToDate);
+                    user.inventory.push_back(item);
+                }
             }
             users.push_back(user);
         }
@@ -93,14 +130,27 @@ void SaveUsers(const std::vector<User>& users, const std::string& filename) {
             {"Membership", user.Membership}
         };
         json jInventory = json::array();
-        for (const auto& LibItem : user.inventory) {
-            jInventory.push_back({
-                {"name", LibItem.name},
-                {"date", LibItem.date},
-                {"writer", LibItem.writer},
-                {"availability", LibItem.availability},
-                {"ID", LibItem.ID}
+        for (const auto& item : user.inventory) {
+            if (item->returnType() == "Book") {
+                jInventory.push_back({
+                {"ID", item->getId()},
+                {"title",item->getTitle()},
+                {"availability", item->isAvailable()},
+                {"dueToDate", item->getDueToDate()},
+                {"type", "Book"}
                 });
+            }
+            else if (item->returnType() == "Magazine") {
+                jInventory.push_back({
+                {"ID", item->getId()},
+                {"Issue",item->getIssue()},
+                {"availability", item->isAvailable()},
+                {"dueToDate", item->getDueToDate()},
+                {"type", "Magazine"}
+                });
+            }
+          
+            
         }
         jUser["inventory"] = jInventory;
         jUsers.push_back(jUser);

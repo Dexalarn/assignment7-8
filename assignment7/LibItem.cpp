@@ -1,76 +1,77 @@
 #include "LibItem.h"
 #include "User.h"
-#include "LoadSave.h"
 #include <iostream>
-#include <vector>
+#include <iomanip>
 #include <sstream>
-#include <string>
-#include <fstream>
+#include <ctime>
 
+std::vector<LibraryItem*> LibraryItems;
 
-using namespace std;
-
-std::vector<LibItem> LibItems;
-
-std::vector<LibItem>& LibItem::getLibItems() {
-    return LibItems;
+std::vector<LibraryItem*>& LibraryItem::getLibraryItems() {
+    return LibraryItems;
 }
 
-void LibItem::listLibItems() {
-    for (const auto& LibItem : LibItems) {
-        std::cout << "ID: " << LibItem.ID << ", Name: " << LibItem.name
-            << ", Date: " << LibItem.writer << ", Writer: " << LibItem.date << ", Availability: "
-            << (LibItem.availability ? "Available" : "Not Available") << std::endl;
+void LibraryItem::listLibraryItems() {
+    for (const auto& item : LibraryItems) {
+        std::cout << "ID: " << item->getId()
+            <<" " << item->returnType()
+            << ",  " << (item->isAvailable() ? "Available" : ("Not Available until " + item->dueToDate))
+            
+            << std::endl;
     }
 }
 
-void LibItem::borrowLibItem(User* loggedUser) {
-    if (this->availability) {
-        loggedUser->inventory.push_back(*this);
-        this->availability = false;
+void LibraryItem::AddItem() {
+    std::string itemType;
+    std::cout << "Enter item type (Book/Magazine): ";
+    std::cin >> itemType;
+
+    int id = LibraryItem::getLibraryItems().size() + 1;
+    bool availability = true;
+
+    if (itemType == "Book") {
+        std::string title;
+        std::cout << "Enter title: "<<std::endl;
+        std::cin.ignore();
+        getline(std::cin, title);
+        LibraryItem::getLibraryItems().push_back(new Book(id, availability,title));
+    }
+    else if (itemType == "Magazine") {
+        std::string issue;
+        std::cout << "Enter issue: " << std::endl;
+        std::cin.ignore();
+        getline(std::cin, issue);
+        LibraryItem::getLibraryItems().push_back(new Magazine(id, availability,issue));
+    }
+    else {
+        std::cout << "Invalid item type!" << std::endl;
+    }
+}
+
+void LibraryItem::borrowLibItem(LibraryItem* item, User* user) {
+    if (item->isAvailable()) {
+        user->inventory.push_back(item);
+        item->borrowItem();
         std::cout << "Item borrowed successfully." << std::endl;
     }
     else {
         std::cout << "Item is not available." << std::endl;
     }
-
-    SaveUsers(User::getUsers(), "users.json");
-    SaveData(LibItem::getLibItems(), "LibItems.json");
 }
 
-void LibItem::returnItem(User* loggedUser) {
-    loggedUser->listInventory();
-    std::cout << "input ID of the Library Item you want to return" << std::endl;
-    int LibItemReturn;
-    std::cin >> LibItemReturn;
-    for (int i = 0; i < loggedUser->inventory.size(); i++) {
-        if (loggedUser->inventory[i].ID == LibItemReturn) {
-            loggedUser->inventory.erase(loggedUser->inventory.begin() + i);
-            for (auto& LibItem : LibItems) {
-                if (LibItem.ID == LibItemReturn) {
-                    LibItem.availability = true;
-                }
-            }
+void LibraryItem::returnLibItem(User* user) {
+    user->listInventory();
+    std::cout << "Input ID of the Library Item you want to return: ";
+    int itemReturnId;
+    std::cin >> itemReturnId;
+
+    for (auto it = user->inventory.begin(); it != user->inventory.end(); ++it) {
+        if ((*it)->getId() == itemReturnId) {
+            (*it)->returnItem();
+            user->inventory.erase(it);
             break;
         }
     }
-    SaveUsers(User::getUsers(), "users.json");
-    SaveData(LibItems, "LibItems.json");
 }
 
-void LibItem::AddItem() {
-    std::string NewItemName;
-    std::string NewItemDate;
-    std::string NewItemWriter;
-    std::cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
-    std::cout << "Name:" << std::endl;
-    std::cin >> NewItemName;
-    std::cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
-    std::cout << "Date:" << std::endl;
-    std::cin >> NewItemDate;
-    std::cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
-    std::cout << "Writer:" << std::endl;
-    std::cin >> NewItemWriter;
 
-    LibItem::getLibItems().push_back(LibItem(NewItemName, NewItemDate, NewItemWriter, true, LibItem::getLibItems().size()+1));
-}
