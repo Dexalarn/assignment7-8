@@ -50,7 +50,7 @@ void LibraryItem::AddItem() {
 
 void LibraryItem::borrowLibItem(LibraryItem* item, User* user) {
     if (item->isAvailable()) {
-        user->inventory.push_back(item);
+        user->getInventory().push_back(item);
         item->borrowItem();
         std::cout << "Item borrowed successfully." << std::endl;
     }
@@ -65,10 +65,9 @@ void LibraryItem::returnLibItem(User* user) {
     int itemReturnId;
     std::cin >> itemReturnId;
 
-    for (auto it = user->inventory.begin(); it != user->inventory.end(); ++it) {
+    for (auto it = user->getInventory().begin(); it != user->getInventory().end(); ++it) {
         if ((*it)->getId() == itemReturnId) {
-            (*it)->returnItem();
-            user->inventory.erase(it);
+            user->returnItem(*(*it));
             break;
         }
     }

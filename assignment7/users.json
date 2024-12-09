@@ -1,28 +1,55 @@
 [
     {
-        "Membership": 69420,
+        "id": 1001,
         "inventory": [],
         "password": "123",
         "username": "Dex"
     },
     {
-        "Membership": 1,
-        "inventory": [],
-        "password": "123",
-        "username": "Alex"
-    },
-    {
-        "Membership": 2,
+        "id": 3002,
         "inventory": [
             {
-                "ID": 6,
-                "Issue": "right now issue",
+                "ID": 2,
                 "availability": false,
-                "dueToDate": "18.12",
+                "dueToDate": "23.12",
+                "issue": "issue of the year",
                 "type": "Magazine"
             }
         ],
         "password": "123",
+        "username": "Alex"
+    },
+    {
+        "id": 2003,
+        "inventory": [
+            {
+                "ID": 1,
+                "availability": false,
+                "dueToDate": "6.1",
+                "title": "Best title",
+                "type": "Book"
+            },
+            {
+                "ID": 3,
+                "availability": false,
+                "dueToDate": "6.1",
+                "title": "GoodTitle",
+                "type": "Book"
+            }
+        ],
+        "password": "123",
         "username": "Student1"
+    },
+    {
+        "id": 3004,
+        "inventory": [],
+        "password": "123",
+        "username": "Guest"
+    },
+    {
+        "id": 2005,
+        "inventory": [],
+        "password": "test",
+        "username": "test"
     }
 ]

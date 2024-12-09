@@ -2,21 +2,21 @@
     {
         "ID": 1,
         "availability": false,
-        "dueToDate": "1.1",
+        "dueToDate": "6.1",
         "title": "Best title",
         "type": "Book"
     },
     {
         "ID": 2,
-        "availability": true,
-        "dueToDate": "",
+        "availability": false,
+        "dueToDate": "23.12",
         "issue": "issue of the year",
         "type": "Magazine"
     },
     {
         "ID": 3,
         "availability": false,
-        "dueToDate": "1.1",
+        "dueToDate": "6.1",
         "title": "GoodTitle",
         "type": "Book"
     },
@@ -36,8 +36,8 @@
     },
     {
         "ID": 6,
-        "availability": false,
-        "dueToDate": "18.12",
+        "availability": true,
+        "dueToDate": "",
         "issue": "right now issue",
         "type": "Magazine"
     }

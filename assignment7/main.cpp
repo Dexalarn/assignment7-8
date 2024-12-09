@@ -19,11 +19,12 @@ static void clearScreen() {
 
 User* LogIn();
 void MainPage();
-void SecondPage();
-void ManagerPage();
+void UserPage(User* loggedUser);
+//void SecondPage();
+//void ManagerPage();
 
 void SaveAll() {
-    std::vector<User>& users = User::getUsers();
+    std::vector<User*>& users = User::getUsers();
     std::vector<LibraryItem*>& LibItems = LibraryItem::getLibraryItems(); 
     // Save users and Library Items data before exiting
     SaveUsers(users, "users.json");
@@ -37,11 +38,11 @@ User* LogIn() {
     cin >> name;
     cout << "Password: ";
     cin >> passwd;
-    std::vector<User>& users = User::getUsers();
+    std::vector<User*>& users = User::getUsers();
     for (auto& user : users) {
-        if (name == user.getUsername() && passwd == user.getPassword()) {
+        if (name == user->getUsername() && passwd == user->getPassword()) {
             cout << "Welcome " << name << "!" << endl;
-            return &user;
+            return user;
         }
     }
     cout << "Invalid credentials. Please try again." << endl;
@@ -59,16 +60,16 @@ void MainPage() {
     cout << "|_|   |_|  |___|    |_______||___| |_______||___|  |_||__| |__||___|  |_|  |___|  " << endl << endl;
 
     cout << "MAIN PAGE" << endl << endl;
-    cout << "1. See available Library Items" << endl;
+    cout << "1. Log In" << endl;
     cout << "2. Create account" << endl;
     cout << "3. Exit" << endl;
-    cout << "4. Log In as Library Manager" << endl;
+    //cout << "4. Log In as Library Manager" << endl;
 
     int action;
     cin >> action;
     switch (action) {
     case 1:
-        SecondPage();
+        UserPage(LogIn());
         break;
     case 2:
         User::newUser();
@@ -76,10 +77,9 @@ void MainPage() {
         MainPage();
         break;
     case 3:
+
         break;
-    case 4:
-        ManagerPage();
-        break;
+ 
     default:
         cout << "Error" << endl;
         MainPage();
@@ -87,113 +87,88 @@ void MainPage() {
     }
 }
 
-void SecondPage() {
-    clearScreen();
-    cout << "Log In" << endl;
-    User* loggedUser = LogIn();
-    if (loggedUser == nullptr) {
-        return;
-    }
-    cout << "Library Items: " << endl << endl;
-    LibraryItem::listLibraryItems(); // Corrected method name and class
-    cout << "1. Borrow a Library Item " << endl;
-    cout << "2. Return an Item" << endl;
-    cout << "3. Exit " << endl;
-    int action;
-    cin >> action;
-    switch (action) {
-    case 1:
-        if (loggedUser->LibItemLimit > loggedUser->inventory.size()) {
-            cout << "Input Library Item ID you want to borrow: ";
-            int LibItemID;
-            cin >> LibItemID;
-            bool LibItemFound = false;
-            for (auto& LibItem : LibraryItem::getLibraryItems()) {
-                if (LibItem->getId() == LibItemID) { // Changed to pointer access
-                    LibItemFound = true;
-                    LibItem->borrowLibItem(LibItem,loggedUser); 
-                    
-                }
-            }
-            if (!LibItemFound) {
-                cout << "Library Item ID not found." << endl;
-            }
-            SaveAll();
-            cin.ignore(); // Wait for user to press Enter
-            cin.ignore();
-            MainPage();
+static void UserPage(User* loggedUser) {
+    while (true) {
+        clearScreen();
+        cout << "welcome back" << loggedUser->getInfo() << endl;
+        cout << "Your items :" << endl;;
+        if ((loggedUser->getInventory().size() == 0)) {
+            cout << "Empty here :(" << endl;
         }
         else {
-            cout << "You reached the limit of amount of Library Items you can borrow" << endl;
-            cout << "please return borrowed Library Items before taking a new one" << endl;
-            cout << "1. return a Library Item" << endl;
-            cout << "2. Exit" << endl;
-            int action;
-            cin >> action;
-            if (action == 1) {
-                clearScreen();
-                LibraryItem::returnLibItem(loggedUser);
-                SaveAll();
-                MainPage();
-            }
-            else {
-                MainPage();
-            }
+            loggedUser->listInventory();
         }
-        break;
-    case 2:
-        clearScreen();
-        LibraryItem::returnLibItem(loggedUser);
-        SaveAll();
-        MainPage();
-        break;
-    case 3:
-        MainPage();
-        break;
-    default:
-        cout << "Error" << endl;
-        MainPage();
-        break;
-    }
-}
 
-void ManagerPage() {
-    clearScreen();
-    cout << "Log In" << endl;
-    User* loggedUser = LogIn();
-    if (loggedUser == nullptr) {
-        return;
-    }
-    if (loggedUser->Membership != 69420) {
-        MainPage();
-    }
-    else {
-        clearScreen();
-        cout << "1. Add an Item" << endl;
-        cout << "2. Main page" << endl;
-        int HelpMeIAmTired;
-        cin >> HelpMeIAmTired;
-        switch (HelpMeIAmTired) {
+        cout << "1. Borrow item" << endl;
+        cout << "2. Return item" << endl;
+        cout << "3. exit" << endl;
+        int action;
+        cin >> action;
+        int chosenItem;
+        bool borrowed = false;
+        bool returned = false;
+        switch (action)
+        {
         case 1:
-            LibraryItem::AddItem();
-            SaveAll();
-            MainPage();
+            clearScreen();
+            LibraryItem::listLibraryItems();
+            cout << "ID of the item you want to borrow:" << endl;
+            
+            cin >> chosenItem;
+            
+            for (auto item : LibraryItem::getLibraryItems()) {
+                if (item->getId() == chosenItem) {
+                    loggedUser->borrowItem(*item);
+                    cout << "item boorowed :)" << endl;
+                    borrowed = true;
+                    SaveAll();
+                    cin.ignore();
+                    break;
+                }
+            }
+            if (borrowed) {break;}
+            cout << "item not found" << endl;
+            cin.ignore();
+            cin.ignore();
             break;
         case 2:
+            clearScreen();
+            loggedUser->listInventory();
+            cout << "ID of the item you want to return:" << endl;
+            
+            cin >> chosenItem;
+
+            for (auto item : loggedUser->getInventory()) {
+                if (item->getId() == chosenItem) {
+                    loggedUser->returnItem(*item);
+                    cout << "item returned :)" << endl;
+                    returned = true;
+                    SaveAll();
+                    cin.ignore();
+                    break;
+                }
+            }
+            if (returned) { break; }
+            cout << "item not found" << endl;
+            cin.ignore();
+            break;
+        case 3:
             MainPage();
             break;
         default:
-            MainPage();
             break;
         }
-        std::vector<LibraryItem*>& LibItems = LibraryItem::getLibraryItems(); // Changed to pointer type
-        SaveData(LibItems, "LibItems.json");
+        SaveAll();
     }
+    
 }
+
+
+
 
 int main() {
     try {
-        std::vector<User>& users = User::getUsers();
+        std::vector<User*>& users = User::getUsers();
         std::vector<LibraryItem*>& LibItems = LibraryItem::getLibraryItems(); // Changed to pointer type
         LoadUsers(users, "users.json");
         LoadData(LibItems, "LibItems.json");
@@ -207,3 +182,4 @@ int main() {
 
     return 0;
 }
+
